@@ -13,7 +13,9 @@
         label="名称"
       >
         <template slot-scope="scope">
-          <el-link type='primary' @click='linkTo(`/project/${scope.row.id}`)'>{{scope.row.name}}</el-link>
+          <router-link :to="`/project/${scope.row.id}`" style="text-decoration: none;">
+            <el-link type='primary'>{{scope.row.name}}</el-link>
+          </router-link>
         </template>
       </el-table-column>
       <el-table-column
@@ -38,11 +40,11 @@
     <create-modal
       :id="id"
       v-if="createModalVisible"
-      @close="changeModalVisible('create', false)"
+      @close="submitted => closeModal(submitted, 'create')"
     />
     <import-modal
       v-if="importModalVisible"
-      @close="changeModalVisible('import', false)"
+      @close="submitted => closeModal(submitted, 'import')"
     />
   </div>
 </template>
@@ -68,13 +70,17 @@ export default {
   },
   
   mounted() {
-    getProjectList()
-    .then(res => {
-      this.tableData = res.data.data;
-    });
+    this.loadProjectList();
   },
 
   methods: {
+    // 加载项目列表
+    loadProjectList() {
+      getProjectList()
+      .then(res => {
+        this.tableData = res.data.data;
+      });
+    },
     // 改变弹窗显隐
     changeModalVisible(name, visible, curId) {
       if (name === 'create') {
@@ -84,6 +90,13 @@ export default {
         }
       } else if (name === 'import') {
         this.importModalVisible = visible;
+      }
+    },
+    // 关闭弹窗
+    closeModal(submitted, name) {
+      this.changeModalVisible(name, false);
+      if (submitted) {
+        this.loadProjectList();
       }
     },
     // 编辑
@@ -97,6 +110,7 @@ export default {
       })
       .then(() => {
         this.$message.success('删除成功');
+        this.loadProjectList();
       });
     }
   }

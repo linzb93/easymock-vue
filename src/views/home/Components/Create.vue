@@ -93,20 +93,20 @@ export default {
           })
           .then(() => {
             this.$message.success('修改成功');
-            this.$emit('close');
+            this.closeModal(true);
           });
         } else {
           createProject(this.createForm)
           .then(() => {
             this.$message.success('添加成功');
-            this.$emit('close');
+            this.closeModal(true);
           });
         }
       })
     },
     // 关闭弹窗
-    closeModal() {
-      this.$emit('close');
+    closeModal(submitted) {
+      this.$emit('close', submitted);
     }
   }
 };

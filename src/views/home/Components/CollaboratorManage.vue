@@ -1,12 +1,12 @@
 <template>
   <div>
-    <el-tag v-for="(col, index) in cols" :key="col" @click="removeCollaborator(index)">{{col}}</el-tag>
+    <el-tag v-for="(col, index) in cols" :key="col" closable @close="removeCollaborator(index)">{{col}}</el-tag>
     <el-row>
-      <el-col :span="19">
+      <el-col :span="18">
         <el-input v-model="inputVal" />
       </el-col>
-      <el-col :span="3">
-        <el-button type="primary" @click="CollaboratorManage">添加</el-button>
+      <el-col :span="3" :offset="1">
+        <el-button type="primary" @click="checkCollaborator">添加</el-button>
       </el-col>
     </el-row>
   </div>
@@ -15,7 +15,6 @@
 <script>
 import clone from 'lodash/clone';
 import {checkExists} from '@/services/user';
-
 
 export default {
   name: 'CollaboratorManage',
@@ -36,13 +35,13 @@ export default {
         name: this.inputVal,
         excludeCurUser: true
       })
-      .then(res => {
-        if (res.data) {
+      .then(({data}) => {
+        if (data.data) {
           this.$emit('input', this.cols.concat(this.inputVal).join(','));
         } else {
           this.$message({
             type: 'error',
-            message: res.message
+            message: data.message
           })
         }
       })
